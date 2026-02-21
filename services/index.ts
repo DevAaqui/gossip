@@ -10,5 +10,5 @@ export {
 } from './api';
 export type { ApiConfig, RequestOptions } from './api';
 
-export { healthCheck, getPosts, submitReaction } from './gossipApi';
-export type { HealthResponse } from './gossipApi';
+export { healthCheck, getPosts, reactToPost } from './gossipApi';
+export type { HealthResponse, ReactResponse, ApiPost } from './gossipApi';
