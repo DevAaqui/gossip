@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,14 @@ import {
   StatusBar,
   SafeAreaView,
   ListRenderItem,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { GOSSIP_NEWS } from './data/gossipNews';
 import type { GossipItem } from './data/gossipNews';
 import GossipCard from './components/GossipCard';
 import type { ReactionType } from './components/GossipCard';
+import { getPosts } from './services/gossipApi';
 
 const HEADER_HEIGHT = 88;
 
@@ -29,6 +32,28 @@ export default function App() {
   const { height } = useWindowDimensions();
   const listItemHeight = height - HEADER_HEIGHT;
   const [reactions, setReactions] = useState<ReactionsMap>({});
+  const [posts, setPosts] = useState<GossipItem[]>([]);
+  console.log('posts>>>>>>>', posts);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadPosts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getPosts();
+      setPosts(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load posts');
+      setPosts(GOSSIP_NEWS);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
 
   const handleReaction = useCallback((id: string, type: ReactionType) => {
     setReactions((prev) => {
@@ -85,21 +110,35 @@ export default function App() {
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Gossip</Text>
-          <Text style={styles.headerSubtitle}>Scroll up for next</Text>
+          <Text style={styles.headerSubtitle}>
+            {loading ? 'Loading…' : 'Scroll up for next'}
+          </Text>
+          {error ? (
+            <TouchableOpacity style={styles.retryBtn} onPress={loadPosts}>
+              <Text style={styles.retryText}>{error} — Tap to retry</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
-        <FlatList
-          data={GOSSIP_NEWS}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          getItemLayout={getItemLayout}
-          pagingEnabled
-          decelerationRate="fast"
-          snapToInterval={listItemHeight}
-          snapToAlignment="start"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          style={styles.list}
-        />
+        {loading && posts.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#a29bfe" />
+            <Text style={styles.loadingText}>Loading posts…</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={posts}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            getItemLayout={getItemLayout}
+            pagingEnabled
+            decelerationRate="fast"
+            snapToInterval={listItemHeight}
+            snapToAlignment="start"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            style={styles.list}
+          />
+        )}
       </SafeAreaView>
     </View>
   );
@@ -129,6 +168,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#808090',
     marginTop: 2,
+  },
+  retryBtn: {
+    marginTop: 6,
+    paddingVertical: 4,
+  },
+  retryText: {
+    fontSize: 12,
+    color: '#a29bfe',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#808090',
   },
   list: {
     flex: 1,
