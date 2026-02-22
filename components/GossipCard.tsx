@@ -114,18 +114,18 @@ export default function GossipCard({
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#252525",
     marginHorizontal: 16,
     marginVertical: 8,
     borderRadius: 20,
     padding: 24,
     justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(197, 163, 106, 0.15)",
   },
   date: {
     fontSize: 12,
-    color: "#a0a0b0",
+    color: "#a09f95",
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 8,
@@ -133,13 +133,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#f0f0f5",
+    color: "#f0efe7",
     marginBottom: 16,
     lineHeight: 28,
   },
   body: {
     fontSize: 16,
-    color: "#c0c0d0",
+    color: "#c0bdb0",
     lineHeight: 24,
     marginBottom: 16,
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "rgba(0,0,0,0.2)",
+    backgroundColor: "rgba(0,0,0,0.3)",
     marginBottom: 8,
   },
   mediaImage: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(197, 163, 106, 0.25)",
     borderRadius: 12,
   },
   mediaPlaceholderIcon: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   mediaPlaceholderText: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(197, 163, 106, 0.5)",
   },
   reactions: {
     flexDirection: "row",
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.08)",
+    borderTopColor: "rgba(197, 163, 106, 0.15)",
   },
   reactionBtn: {
     flexDirection: "row",
@@ -187,13 +187,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 24,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.05)",
     gap: 6,
   },
   reactionBtnActive: {
-    backgroundColor: "rgba(162, 155, 254, 0.25)",
+    backgroundColor: "rgba(197, 163, 106, 0.2)",
     borderWidth: 1,
-    borderColor: "rgba(162, 155, 254, 0.5)",
+    borderColor: "rgba(197, 163, 106, 0.5)",
   },
   reactionIcon: {
     fontSize: 20,
@@ -201,6 +201,6 @@ const styles = StyleSheet.create({
   reactionCount: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#e0e0e8",
+    color: "#E8D29F",
   },
 });

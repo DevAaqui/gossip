@@ -164,10 +164,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0f0f1a" />
+      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Gossip</Text>
+          <Text style={styles.headerTitle}>Vāk</Text>
           <Text style={styles.headerSubtitle}>
             {loading ? 'Loading…' : 'Scroll up for next'}
           </Text>
@@ -179,7 +179,7 @@ export default function App() {
         </View>
         {loading && posts.length === 0 ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#a29bfe" />
+            <ActivityIndicator size="large" color="#C5A36A" />
             <Text style={styles.loadingText}>Loading posts…</Text>
           </View>
         ) : (
@@ -205,7 +205,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#1a1a1a',
   },
   safe: {
     flex: 1,
@@ -214,17 +214,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: 'rgba(197, 163, 106, 0.2)',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#f0f0f5',
+    color: '#f0efe7',
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#808090',
+    color: '#a09f95',
     marginTop: 2,
   },
   retryBtn: {
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 12,
-    color: '#a29bfe',
+    color: '#C5A36A',
   },
   loadingContainer: {
     flex: 1,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#808090',
+    color: '#a09f95',
   },
   list: {
     flex: 1,

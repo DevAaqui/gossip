@@ -1,12 +1,15 @@
 {
   "expo": {
-    "name": "Gossip",
-    "slug": "gossip",
+    "name": "Vak",
+    "slug": "vak",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/images/icon.png",
     "splash": {
-      "backgroundColor": "#1a1a2e"
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
     },
     "ios": {
       "supportsTablet": true,
@@ -14,7 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1a1a2e"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#1a1a1a"
       },
       "package": "com.gossip.app"
     }
