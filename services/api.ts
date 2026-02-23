@@ -23,12 +23,8 @@ export class ApiError extends Error {
 const DEFAULT_TIMEOUT_MS = 15000;
 
 function getDefaultBaseURL(): string {
-  // React Native / Expo: use your machine's IP or a deployed URL for the Gossip server
-  if (typeof __DEV__ !== 'undefined' && __DEV__) {
-    // Android emulator: 10.0.2.2:3000; iOS simulator: localhost works
-    return 'http://localhost:3000';
-  }
-  return 'http://localhost:3000';
+  // Production backend on Railway. For local dev, call configureApi({ baseURL: 'http://localhost:3000' }) in App.tsx.
+  return 'https://gossipserver-production.up.railway.app';
 }
 
 let config: ApiConfig = {
