@@ -21,6 +21,11 @@
         "backgroundColor": "#1a1a1a"
       },
       "package": "com.gossip.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ecef4cd3-e443-4f27-8991-be17e976270a"
+      }
     }
   }
 }
