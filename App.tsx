@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -17,8 +17,21 @@ import GossipCard from './components/GossipCard';
 import type { ReactionType } from './components/GossipCard';
 import { getPosts, reactToPost } from './services/gossipApi';
 import type { ApiPost } from './services/gossipApi';
+import {
+  getCachedPosts,
+  setCachedPosts,
+  setPostCacheSize,
+} from './utils/postCache';
 
 const HEADER_HEIGHT = 88;
+
+/** How many posts to keep in cache and show immediately while API loads. */
+const CACHE_POSTS_SIZE = 5;
+/** Posts per page for infinite scroll. */
+const PAGE_SIZE = 10;
+
+// Apply configurable cache size once at load
+setPostCacheSize(CACHE_POSTS_SIZE);
 
 type PostWithCounts = GossipItem & { thumbs_up_count?: number; thumbs_down_count?: number; heart_count?: number };
 
@@ -56,34 +69,81 @@ export default function App() {
   const { height } = useWindowDimensions();
   const listItemHeight = height - HEADER_HEIGHT;
   const [reactions, setReactions] = useState<ReactionsMap>({});
-  const [posts, setPosts] = useState<PostWithCounts[]>([]);
+  const [posts, setPosts] = useState<PostWithCounts[]>(() =>
+    getCachedPosts<PostWithCounts>() as PostWithCounts[]
+  );
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const pageRef = useRef(1);
 
-  const loadPosts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getPosts();
-      setPosts(data);
-      setReactions((prev) => {
-        const next = { ...prev };
-        data.forEach((p) => {
-          next[p.id] = reactionStateFromPost(p);
-        });
-        return next;
+  const syncReactionsFromPosts = useCallback((newPosts: PostWithCounts[]) => {
+    setReactions((prev) => {
+      const next = { ...prev };
+      newPosts.forEach((p) => {
+        next[p.id] = reactionStateFromPost(p);
       });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load posts');
-      setPosts(GOSSIP_NEWS);
-    } finally {
-      setLoading(false);
-    }
+      return next;
+    });
   }, []);
 
-  useEffect(() => {
-    loadPosts();
+  const loadPosts = useCallback(
+    async (append = false) => {
+      if (append) {
+        if (loadingMore || !hasMore) return;
+        setLoadingMore(true);
+      } else {
+        setError(null);
+        setLoading(true);
+        pageRef.current = 1;
+      }
+
+      const page = pageRef.current;
+      try {
+        const { posts: data, hasMore: more } = await getPosts({
+          page,
+          limit: PAGE_SIZE,
+        });
+
+        if (append) {
+          setPosts((prev) => {
+            const ids = new Set(prev.map((p) => p.id));
+            const added = data.filter((p) => !ids.has(p.id));
+            return prev.concat(added);
+          });
+          if (data.length === 0) setHasMore(false);
+          setLoadingMore(false);
+        } else {
+          setPosts(data);
+          setCachedPosts(data);
+          setLoading(false);
+        }
+        setHasMore(more);
+        if (data.length > 0) {
+          syncReactionsFromPosts(data);
+        }
+      } catch (e) {
+        if (append) {
+          setLoadingMore(false);
+        } else {
+          setError(e instanceof Error ? e.message : 'Failed to load posts');
+          setLoading(false);
+          if (posts.length === 0) setPosts(GOSSIP_NEWS);
+        }
+      }
+    },
+    [loadingMore, hasMore, syncReactionsFromPosts, posts.length]
+  );
+
+  const loadMore = useCallback(() => {
+    pageRef.current += 1;
+    loadPosts(true);
   }, [loadPosts]);
+
+  useEffect(() => {
+    loadPosts(false);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- initial load only
 
   const handleReaction = useCallback(async (id: string, type: ReactionType) => {
     const post = posts.find((p) => p.id === id);
@@ -172,7 +232,7 @@ export default function App() {
             {loading ? 'Loading…' : 'Scroll up for next'}
           </Text>
           {error ? (
-            <TouchableOpacity style={styles.retryBtn} onPress={loadPosts}>
+            <TouchableOpacity style={styles.retryBtn} onPress={() => loadPosts(false)}>
               <Text style={styles.retryText}>{error} — Tap to retry</Text>
             </TouchableOpacity>
           ) : null}
@@ -195,6 +255,16 @@ export default function App() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             style={styles.list}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.4}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={styles.footerLoader}>
+                  <ActivityIndicator size="small" color="#C5A36A" />
+                  <Text style={styles.footerLoaderText}>Loading more…</Text>
+                </View>
+              ) : null
+            }
           />
         )}
       </SafeAreaView>
@@ -250,5 +320,16 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
+  },
+  footerLoader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+    gap: 8,
+  },
+  footerLoaderText: {
+    fontSize: 14,
+    color: '#a09f95',
   },
 });

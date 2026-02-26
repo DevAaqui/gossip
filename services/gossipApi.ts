@@ -57,13 +57,31 @@ function normalizePost(p: ApiPost): GossipItem & { thumbs_up_count: number; thum
   };
 }
 
+export type PostWithCounts = GossipItem & { thumbs_up_count: number; thumbs_down_count: number; heart_count: number };
+
+export interface GetPostsOptions {
+  page?: number;
+  limit?: number;
+}
+
+export interface GetPostsResult {
+  posts: PostWithCounts[];
+  hasMore: boolean;
+}
+
 /**
- * Fetch posts from the API. Returns posts with reaction counts.
+ * Fetch posts from the API, with optional pagination.
+ * Backend can accept ?page=1&limit=10. If not supported, entire list is returned and hasMore is false.
  */
-export async function getPosts(): Promise<(GossipItem & { thumbs_up_count: number; thumbs_down_count: number; heart_count: number })[]> {
-  const data = await get<ApiPost[] | { posts?: ApiPost[] }>('/api/posts');
+export async function getPosts(options?: GetPostsOptions): Promise<GetPostsResult> {
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 10;
+  const query = `?page=${page}&limit=${limit}`;
+  const data = await get<ApiPost[] | { posts?: ApiPost[] }>(`/api/posts${query}`);
   const list = Array.isArray(data) ? data : (data?.posts ?? []);
-  return list.map(normalizePost);
+  const posts = list.map(normalizePost);
+  const hasMore = posts.length >= limit;
+  return { posts, hasMore };
 }
 
 /**

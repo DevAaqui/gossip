@@ -11,4 +11,11 @@ export {
 export type { ApiConfig, RequestOptions } from './api';
 
 export { healthCheck, getPosts, reactToPost } from './gossipApi';
-export type { HealthResponse, ReactResponse, ApiPost } from './gossipApi';
+export type {
+  HealthResponse,
+  ReactResponse,
+  ApiPost,
+  GetPostsOptions,
+  GetPostsResult,
+  PostWithCounts,
+} from './gossipApi';
