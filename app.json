@@ -22,6 +22,16 @@
       },
       "package": "com.gossip.app"
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "ecef4cd3-e443-4f27-8991-be17e976270a"
